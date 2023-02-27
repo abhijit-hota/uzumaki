@@ -7,14 +7,14 @@ import (
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
 )
 
+type MessageBody[T comparable] struct {
+	Type    string `json:"type"`
+	Message T      `json:"message"`
+	MsgID   *int   `json:"msg_id"`
+}
+
 func RunMultiBroadcast() {
 	messages := NewSafeSet[int]()
-
-	var body = struct {
-		Type    string `json:"type"`
-		Message int    `json:"message"`
-		MsgID   *int   `json:"msg_id"`
-	}{}
 
 	neighbours := make([]string, 0)
 
@@ -35,13 +35,14 @@ func RunMultiBroadcast() {
 	})
 
 	n.Handle("broadcast", func(msg maelstrom.Message) error {
+		var body MessageBody[int]
 		if err := json.Unmarshal(msg.Body, &body); err != nil {
 			return err
 		}
 
 		if newAdded := messages.Add(body.Message); newAdded {
 			for _, id := range neighbours {
-				// I don't understand why .Send doesn't work.
+				// I don't understand why n.Send() doesn't work.
 				n.RPC(id, map[string]any{
 					"type":    "broadcast",
 					"message": body.Message,
