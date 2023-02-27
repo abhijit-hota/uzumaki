@@ -8,18 +8,17 @@ import (
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
 )
 
-var messages = struct {
-	mu     sync.Mutex
-	values []int
-}{}
-
-var body = struct {
-	Type    string `json:"type"`
-	Message int    `json:"message"`
-	MsgID   int    `json:"msg_id"`
-}{}
-
 func RunBroadcast() {
+	var messages = struct {
+		mu     sync.Mutex
+		values []int
+	}{}
+
+	var body = struct {
+		Type    string `json:"type"`
+		Message int    `json:"message"`
+		MsgID   int    `json:"msg_id"`
+	}{}
 	n := maelstrom.NewNode()
 
 	n.Handle("topology", func(msg maelstrom.Message) error {
