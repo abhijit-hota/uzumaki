@@ -42,7 +42,8 @@ func RunMultiBroadcast() {
 
 		if newAdded := messages.Add(body.Message); newAdded {
 			for _, id := range neighbours {
-				// I don't understand why n.Send() doesn't work.
+				// n.Send() doesn't work.
+				// See: https://community.fly.io/t/help-with-gossip-glomers-fly-io-distributed-systems-challenges/10936/15?u=kretaceous
 				n.RPC(id, map[string]any{
 					"type":    "broadcast",
 					"message": body.Message,
